@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Enrollment Studio UI" verbose="1">
+    <listeners>
+        <listener class-name="com.enrollmentstudio.automation.listeners.ScreenshotOnFailureListener"/>
+    </listeners>
+    <test name="Regression">
+        <packages>
+            <package name="com.enrollmentstudio.automation.tests"/>
+        </packages>
+    </test>
+</suite>
