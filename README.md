@@ -38,3 +38,12 @@ mvn test -Dheadless=true      # no browser window (HEADLESS=true env var also wo
 ```
 
 Other settings (`baseUrl`, `explicitWaitSeconds`) can be overridden with `-D<name>=...`.
+
+## Reports
+
+Every run writes TestNG's reports to `target/surefire-reports/`:
+
+- `emailable-report.html` – one page: each test with its description, result and time, and a screenshot of the browser embedded under every failed test. Open it with `start target\surefire-reports\emailable-report.html`.
+- `index.html` – TestNG's full report (suites, groups, timings, output).
+
+Failure screenshots are also saved as files in `target/screenshots/`. The screenshot listener is registered on `BaseTest`, so it works for the whole suite and for single classes run with `-Dtest=...`.

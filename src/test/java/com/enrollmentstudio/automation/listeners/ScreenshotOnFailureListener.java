@@ -5,13 +5,18 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.Base64;
 
-/** Saves a screenshot to target/screenshots when a test fails. */
+/**
+ * When a test fails: saves a screenshot to target/screenshots and embeds it
+ * in TestNG's report (target/surefire-reports/emailable-report.html), under
+ * the failed test.
+ */
 public class ScreenshotOnFailureListener implements ITestListener {
 
     @Override
@@ -20,11 +25,15 @@ public class ScreenshotOnFailureListener implements ITestListener {
             return;
         }
         try {
+            byte[] png = ((TakesScreenshot) DriverFactory.get()).getScreenshotAs(OutputType.BYTES);
             Path dir = Path.of("target", "screenshots");
             Files.createDirectories(dir);
-            Path source = ((TakesScreenshot) DriverFactory.get()).getScreenshotAs(OutputType.FILE).toPath();
             String name = result.getTestClass().getRealClass().getSimpleName() + "_" + result.getName() + ".png";
-            Files.copy(source, dir.resolve(name), StandardCopyOption.REPLACE_EXISTING);
+            Files.write(dir.resolve(name), png);
+
+            Reporter.setCurrentTestResult(result);
+            Reporter.log("<p>Screen at failure:</p><img alt=\"Screen at failure\" style=\"max-width:900px\" src=\"data:image/png;base64,"
+                    + Base64.getEncoder().encodeToString(png) + "\"/>");
         } catch (IOException | RuntimeException e) {
             System.err.println("could not save failure screenshot: " + e.getMessage());
         }
